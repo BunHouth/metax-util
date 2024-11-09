@@ -1,6 +1,13 @@
 export type CURRENCY_QUERY = 'futures' | 'options' | 'spot'
 export type POSITION_MODEL = 'cross' | 'fix'
 export type SIDE_PARAMS = 'BUY' |'SELL'
+
+export type STANDARD_API_RESPONSE = {
+  code: number,
+  msg: string,
+  info: any
+}
+
 export type API_KEY_PAYLOAD = {
   code: number,
   data: {
@@ -12,6 +19,8 @@ export type API_KEY_PAYLOAD = {
 }
 
 export type NumNull = null | number;
+
+export type ASK_BID = [number, number];
 
 export type CURRENCY_BALANCE = {
   available: number,
@@ -78,20 +87,87 @@ export type ACCOUNT_BALANCE = {
     transferOnly: boolean
   }
 }
-export type TRADE_HISTORY_PAYLOAD = {}
-export type TOKEN_PAYLOAD = {}
+export type TRADE_HISTORY_PAYLOAD = {
+  data: {
+    nextId: number,
+    prevId: number,
+    rows: any[],
+    total: number
+  }
+} & STANDARD_API_RESPONSE;
+
+export type SPOT_ORDER_DETAIL_PAYLOAD = {
+  data: any
+} & STANDARD_API_RESPONSE;
+
+export type SPOT_ORDERS_PAYLOAD = {
+  data: {
+    nextId: number,
+    prevId: number,
+    rows: any[] | null,
+    total: number
+  }
+} & STANDARD_API_RESPONSE;
+
+export type SPOT_ORDER_PAYLOAD = {
+  data: {
+    orderTotal: number,
+    orders: {
+      nextId: number,
+      prevId: number,
+      rows: any[] | null,
+      total: number
+    }
+  }
+} & STANDARD_API_RESPONSE;
+
+export type SPOT_ORDER_BOOK_PAYLOAD = {
+  data: {
+    asks: ASK_BID[],
+    bids: ASK_BID[],
+    symbolName: string,
+    ts: number
+  }
+} & STANDARD_API_RESPONSE;
+
+export type TOKEN_PAYLOAD = {
+  data: string
+} & STANDARD_API_RESPONSE;
+
 export type BALANCE_PAYLOAD = {
-  code: number,
-  info: any,
-  msg: string,
   data: {
     accounts: ACCOUNT_BALANCE[],
     quote: string,
     total: number
   }
-}
-export type CURRENCY_PAYLOAD = {}
-export type POSITION_PAYLOAD = {}
+} & STANDARD_API_RESPONSE;
+
+export type CURRENCY_DATA = {
+  code: string,
+  displayCode: string,
+  exchangeable: null | boolean,
+  id: number,
+  name: string,
+  outerTransferable: null | boolean,
+  receivable: null | boolean,
+  rechargeable: null | boolean,
+  symbol: string,
+  transferable: null | boolean,
+  withdrawable: null | boolean
+};
+
+export type CURRENCY_PAYLOAD = {
+  data: CURRENCY_DATA[],
+} & STANDARD_API_RESPONSE
+
+export type POSITION_PAYLOAD = {
+  data: {
+    nextId: number,
+    prevId: number,
+    rows: any[],
+    total: number
+  }
+} & STANDARD_API_RESPONSE;
 
 export type MetaXUtilsParams = {
   apiKey?: string;

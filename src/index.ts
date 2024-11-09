@@ -10,7 +10,11 @@ import {
   POSITION_PAYLOAD,
   POSITION_MODEL,
   TRADE_HISTORY_PAYLOAD,
-  SIDE_PARAMS
+  SIDE_PARAMS,
+  SPOT_ORDER_BOOK_PAYLOAD,
+  SPOT_ORDER_PAYLOAD,
+  SPOT_ORDER_DETAIL_PAYLOAD,
+  SPOT_ORDERS_PAYLOAD
 } from './types'
 import ENDPOINTS from './constant';
 import {createHeader} from './utils/header';
@@ -66,7 +70,7 @@ class MetaXUtils {
   }
 
   public async position(category: CURRENCY_QUERY, positionModel: POSITION_MODEL = 'cross', page: number = 1, pageSize: number = 20): Promise<POSITION_PAYLOAD> {
-    const headers = createHeader({positionModel, page, pageSize}, this.apiKey, this.privateKey);
+    const headers = createHeader({page, pageSize, positionModel}, this.apiKey, this.privateKey);
     const {data} = await axios.get(ENDPOINTS.POSITION(category), {params: {page, pageSize, positionModel}, headers});
 
     return data;
@@ -79,28 +83,28 @@ class MetaXUtils {
     return data;
   }
 
-  public async spotOrderBook(symbol: string): Promise<TRADE_HISTORY_PAYLOAD> {
+  public async spotOrderBook(symbol: string): Promise<SPOT_ORDER_BOOK_PAYLOAD> {
     const headers = createHeader({symbol}, this.apiKey, this.privateKey);
     const {data} = await axios.get(ENDPOINTS.SPOT_ORDER_BOOK, {params: {symbol}, headers});
 
     return data;
   }
 
-  public async spotOrder(symbol: string, side: SIDE_PARAMS, page: number, pageSize: number): Promise<TRADE_HISTORY_PAYLOAD> {
-    const headers = createHeader({page, pageSize, symbol, side}, this.apiKey, this.privateKey);
-    const {data} = await axios.get(ENDPOINTS.SPOT_ORDER, {params: {page, pageSize, symbol, side}, headers});
+  public async spotOrder(symbol: string, side: SIDE_PARAMS, page: number, pageSize: number): Promise<SPOT_ORDER_PAYLOAD> {
+    const headers = createHeader({page, pageSize, side, symbol}, this.apiKey, this.privateKey);
+    const {data} = await axios.get(ENDPOINTS.SPOT_ORDER, {params: {page, pageSize, side, symbol}, headers});
 
     return data;
   }
 
-  public async spotOrderDetail(id: number | string): Promise<TRADE_HISTORY_PAYLOAD> {
+  public async spotOrderDetail(id: number | string): Promise<SPOT_ORDER_DETAIL_PAYLOAD> {
     const headers = createHeader({id: String(id)}, this.apiKey, this.privateKey);
     const {data} = await axios.get(ENDPOINTS.SPOT_ORDER_DETAIL, {params: {id: String(id)}, headers});
 
     return data;
   }
 
-  public async spotOrders(category: CURRENCY_QUERY, positionModel: POSITION_MODEL, page: number, pageSize: number): Promise<TRADE_HISTORY_PAYLOAD> {
+  public async spotOrders(category: CURRENCY_QUERY, positionModel: POSITION_MODEL, page: number, pageSize: number): Promise<SPOT_ORDERS_PAYLOAD> {
     const headers = createHeader({page, pageSize, positionModel}, this.apiKey, this.privateKey);
     const {data} = await axios.get(ENDPOINTS.SPOT_ORDERS(category), {params: {page, pageSize, positionModel}, headers});
 
