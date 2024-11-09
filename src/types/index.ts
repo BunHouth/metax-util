@@ -1,6 +1,60 @@
 export type CURRENCY_QUERY = 'futures' | 'options' | 'spot'
 export type POSITION_MODEL = 'cross' | 'fix'
+export type POSITION_TYPE = 'market' | 'limit'
 export type SIDE_PARAMS = 'BUY' |'SELL'
+export type SIDE_LOWER_PARAMS = 'buy' |'sell'
+export type TRADE_DIRECTION = 'long' | 'short'
+
+export type CANCEL_ORDER_PARAMS = {
+  id: string | number,
+  symbol?: string,
+  positionType?: POSITION_TYPE
+}
+
+export type BATCH_CANCEL_PARAMS = {
+  symbol: string,
+  orderId: number,
+  orderLinkId: string,
+}[];
+
+export type BATCH_CREATE_PARAMS = {
+  symbol: string,
+  type: string,
+  direction: TRADE_DIRECTION,
+  quantity: number,
+  leverage: number,
+  orderLinkId: string,
+  price: number,
+}[]
+
+export type TRANSFER_PARAMS = {
+  fromBiz: CURRENCY_QUERY & 'asset',
+  toBiz: CURRENCY_QUERY & 'asset',
+  amount: string,
+  currencyId: string | number,
+}
+
+export type ORDER_CREATE_PARAMS = {
+  symbol: string,
+  positionType: POSITION_TYPE,
+  positionModel?: 'fix' | 'cross',
+  positionSide?: SIDE_LOWER_PARAMS,
+  leverage?: number | string,
+  quantity: number | string,
+  quantityUnit: string,
+  price: number | string,
+}
+
+export type CLOSE_ORDER_PARAMS = {
+  symbol: string,
+  positionType: POSITION_TYPE,
+  quantityUnit: string,
+  quantity: string | number,
+  // for futures only
+  closeType?: string,
+  closeNum?: string | number,
+  price?: number | string
+}
 
 export type STANDARD_API_RESPONSE = {
   code: number,
@@ -99,6 +153,14 @@ export type TRADE_HISTORY_PAYLOAD = {
 export type SPOT_ORDER_DETAIL_PAYLOAD = {
   data: any
 } & STANDARD_API_RESPONSE;
+
+export type CREATE_ORDER_PAYLOAD = {
+  data: any
+} & STANDARD_API_RESPONSE;
+
+export type BATCH_CREATE_PAYLOAD = {
+  data: {code: number, msg: string, orderId: number, orderLinkId: string, processAt: number, symbol: string}[]
+} & STANDARD_API_RESPONSE
 
 export type SPOT_ORDERS_PAYLOAD = {
   data: {

@@ -2,6 +2,13 @@
 import axios from 'axios';
 import {
   MetaXUtilsParams,
+  ORDER_CREATE_PARAMS,
+  TRANSFER_PARAMS,
+  SIDE_LOWER_PARAMS,
+  CANCEL_ORDER_PARAMS,
+  BATCH_CANCEL_PARAMS,
+  BATCH_CREATE_PARAMS,
+  CLOSE_ORDER_PARAMS,
   API_KEY_PAYLOAD,
   BALANCE_PAYLOAD,
   CURRENCY_PAYLOAD,
@@ -14,10 +21,13 @@ import {
   SPOT_ORDER_BOOK_PAYLOAD,
   SPOT_ORDER_PAYLOAD,
   SPOT_ORDER_DETAIL_PAYLOAD,
-  SPOT_ORDERS_PAYLOAD
+  SPOT_ORDERS_PAYLOAD,
+  CREATE_ORDER_PAYLOAD,
+  BATCH_CREATE_PAYLOAD,
 } from './types'
 import ENDPOINTS from './constant';
 import {createHeader} from './utils/header';
+import {removeEmpty, sortObject} from './utils';
 
 const urls = {
   TEST: 'https://dev1.123kj.top',
@@ -107,6 +117,62 @@ class MetaXUtils {
   public async spotOrders(category: CURRENCY_QUERY, positionModel: POSITION_MODEL, page: number, pageSize: number): Promise<SPOT_ORDERS_PAYLOAD> {
     const headers = createHeader({page, pageSize, positionModel}, this.apiKey, this.privateKey);
     const {data} = await axios.get(ENDPOINTS.SPOT_ORDERS(category), {params: {page, pageSize, positionModel}, headers});
+
+    return data;
+  }
+
+  public async create(category: CURRENCY_QUERY, params: ORDER_CREATE_PARAMS): Promise<CREATE_ORDER_PAYLOAD> {
+    params.price = String(params.price);
+    params.quantity = String(params.quantity);
+    if(params.leverage && category === 'futures') {
+      params.leverage = String(params.leverage);
+    }
+    const headers = createHeader(sortObject(removeEmpty(params)), this.apiKey, this.privateKey);
+    const {data} = await axios.post(ENDPOINTS.CREATE_ORDER(category), params, {headers});
+
+    return data;
+  }
+
+  public async close(category: CURRENCY_QUERY, params: CLOSE_ORDER_PARAMS): Promise<any> {
+    params.quantity = String(params.quantity);
+    if(params.price) {
+      params.price = String(params.price);
+    }
+    const headers = createHeader(sortObject(removeEmpty(params)), this.apiKey, this.privateKey);
+    const {data} = await axios.post(ENDPOINTS.CLOSE_ORDER(category), sortObject(removeEmpty(params)), {headers});
+
+    return data;
+  }
+
+  public async cancel(category: CURRENCY_QUERY, params: CANCEL_ORDER_PARAMS): Promise<any> {
+    params.id = String(params.id);
+    const headers = createHeader(sortObject(removeEmpty(params)), this.apiKey, this.privateKey);
+    const {data} = await axios.post(ENDPOINTS.CANCEL_ORDER(category), sortObject(removeEmpty(params)), {headers});
+
+    return data;
+  }
+
+  public async transfer(params: TRANSFER_PARAMS): Promise<any> {
+    params.amount = String(params.amount);
+    params.currencyId = String(params.currencyId);
+    const headers = createHeader(sortObject(removeEmpty(params)), this.apiKey, this.privateKey);
+    const {data} = await axios.post(ENDPOINTS.TRANFER, sortObject(removeEmpty(params)), {headers});
+
+    return data;
+  }
+
+  public async batchCreate(category: CURRENCY_QUERY, side: SIDE_LOWER_PARAMS, params: BATCH_CREATE_PARAMS): Promise<BATCH_CREATE_PAYLOAD> {
+    const body = params.map(obj => sortObject(removeEmpty(obj)))
+    const headers = createHeader({body: JSON.stringify(body)}, this.apiKey, this.privateKey);
+    const {data} = await axios.post(ENDPOINTS.BATCH_CREATE(category, side), {body: JSON.stringify(body)}, {headers});
+
+    return data;
+  }
+
+  public async batchCancel(category: CURRENCY_QUERY, params: BATCH_CANCEL_PARAMS): Promise<BATCH_CREATE_PAYLOAD> {
+    const body = params.map(obj => sortObject(removeEmpty(obj)))
+    const headers = createHeader({body: JSON.stringify(body)}, this.apiKey, this.privateKey);
+    const {data} = await axios.post(ENDPOINTS.BATCH_CANCEL(category), {body: JSON.stringify(body)}, {headers});
 
     return data;
   }
