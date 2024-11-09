@@ -6,7 +6,6 @@ export const createHeader = (params: {[key: string]: any}, apiKey: string, priva
   const TIMESTAMP = Date.now().toString();
   const signData = TIMESTAMP + apiKey + RECV;
   const signature = sign(signData, params, privateKey);
-  console.log({signature})
 
   const headers = {
       'X-SAASAPI-API-KEY': apiKey,
